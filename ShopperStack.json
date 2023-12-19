@@ -1,0 +1,1225 @@
+{
+	"info": {
+		"_postman_id": "01efcbce-2a6e-456f-84f9-6de95c54fed6",
+		"name": "Practicle",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31569703",
+		"_collection_link": "https://www.postman.com/blue-firefly-903439/workspace/public/collection/31569703-01efcbce-2a6e-456f-84f9-6de95c54fed6?action=share&source=collection_link&creator=31569703"
+	},
+	"item": [
+		{
+			"name": "Regester Shopper",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							" let x=Math.floor((Math.random() * 100)+1);\r",
+							" pm.environment.set(\"phone\",\"88865448\"+x); \r",
+							" pm.environment.set(\"email\",\"email22\"+x);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var ref = JSON.parse(responseBody);\r",
+							"\r",
+							"tests[\"Valid StatusCode\"]=ref.statusCode==201;\r",
+							"tests[\"first name verified\"]=ref.data.firstName== \"Faruq\";\r",
+							"tests[\"last name verified\"]=ref.data.lastName== \"shaik\";\r",
+							"tests[\"Active Status verified\"]=ref.data.status==\"ACTIVE\";\r",
+							"tests[\"City verified Successully\"]=ref.data.city==\"Banglore\";\r",
+							"tests[\"State verified Successully\"]=ref.data.state== \"Karnataka\";\r",
+							"tests[\"country verified Successully\"]=ref.data.country== \"India\";\r",
+							"\r",
+							"//user id verification\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"userId generated successfull\", function () {\r",
+							"    \r",
+							"    id=pm.environment.set(\"userId\", ref.data.userId);\r",
+							"    pm.expect(jsonData.value).to.eql(id);\r",
+							"});\r",
+							"//mail verification\r",
+							"pm.test(\"Mail successfully created\", function () {\r",
+							"    \r",
+							"    mail= pm.environment.set(\"verified_email\",ref.data.email);\r",
+							"    pm.expect(jsonData.value).to.eql(mail);\r",
+							"});\r",
+							"\r",
+							"//capture role\r",
+							"pm.test(\"Role is created\", function () {\r",
+							"    role=pm.environment.set(\"role verified\", ref.data.role);\r",
+							"    pm.expect(jsonData.value).to.eql(role);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"city\": \"Banglore\",\r\n  \"country\": \"India\",\r\n  \"email\": \"{{email}}@gmail.com\",\r\n  \"firstName\": \"Faruq\",\r\n  \"gender\": \"MALE\",\r\n  \"lastName\": \"shaik\",\r\n  \"password\": \"{{password}}\",\r\n  \"phone\": {{phone}},\r\n  \"state\": \"Karnataka\",\r\n  \"zoneId\": \"ALPHA\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping/shoppers",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"shoppers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Shopper Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var ref = JSON.parse(responseBody);\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"tests[\"status matched \"]=ref.statusCode==200;\r",
+							"tests[\"first name verified\"]=ref.data.firstName== \"Faruq\";\r",
+							"\r",
+							"//store tokken in environment\r",
+							"tokken=pm.environment.set(\"jwtToken\", ref.data.jwtToken);\r",
+							"\r",
+							"//import required from Test Data(Environment)\r",
+							"mail=pm.environment.get(\"{{verified_email}}\");\r",
+							"role=pm.environment.get(\"{{role verified}}\");\r",
+							"id=pm.environment.get(\"{{userId}}\");\r",
+							"\r",
+							"//verifing email\r",
+							"pm.test(\"email successfully verified\", function () {\r",
+							"    \r",
+							"    pm.expect(jsonData.value).to.eql(mail);\r",
+							"});\r",
+							"\r",
+							"//verifing role\r",
+							"pm.test(\"role is verified\", function () {\r",
+							"    pm.expect(jsonData.value).to.eql(role);\r",
+							"});\r",
+							"\r",
+							"// verified user id \r",
+							"pm.test(\"userId is verified\", function () {\r",
+							"    pm.expect(jsonData.value).to.eql(id);\r",
+							"});\r",
+							"\r",
+							"//Tokken verefing \r",
+							"pm.test(\"Token verified\",function(){\r",
+							"    pm.expect(jsonData.value).to.eql(tokken);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"{{email}}@gmail.com\",\r\n  \"password\": \"{{password}}\",\r\n  \"role\": \"{{role verified}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping//users/login",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"",
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Returns all the default products",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var ref= JSON.parse(responseBody);\r",
+							"tests[\"verified \"]=ref.statusCode==200;\r",
+							"tests[\"Products Displayed\"]=ref.message==\"Success\";\r",
+							"pm.test(\"products images are Displayed \", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"productImageURLs\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping/products/alpha",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"products",
+						"alpha"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add a product to the wishlist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var ref = JSON.parse(responseBody);\r",
+							"tests[\"StatusCode Verified\"]=responseCode.code==201;\r",
+							"\r",
+							"//Capturing of itme and product id's and quantity\r",
+							"id=pm.environment.set(\"itemId\",ref.data.itemId);\r",
+							"pid=pm.environment.set(\"productId\",ref.data.productId);\r",
+							"qua=pm.environment.set(\"product_quantity\",ref.data.quantity);\r",
+							"\r",
+							"//item id captured and verified\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"item id verified and captured\", function () {\r",
+							"    pm.expect(jsonData.value).to.eql(id);\r",
+							"});\r",
+							"//product id capture and verified\r",
+							"pm.test(\"product id captured and verified\", function () {\r",
+							"    pm.expect(jsonData.value).to.eql(pid);\r",
+							"});\r",
+							"\r",
+							"//verifing product quantity\r",
+							"pm.test(\"Product quantity matched\",function(){\r",
+							"    pm.expect(jsonData.value).to.eql(qua);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"productId\": 69,\r\n  \"quantity\": 100\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping/shoppers/{{userId}}/wishlist",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"shoppers",
+						"{{userId}}",
+						"wishlist"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all the products from wishlist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var ref = JSON.parse(responseBody);\r",
+							"tests[\"StatusCode verified\"]=ref.statusCode== 200;\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"//capturing data from environment\r",
+							"pid=pm.environment.get(\"{{productId}}\");\r",
+							"id = pm.environment.get(\"{{itemId}}\");\r",
+							"\r",
+							"//verifing item id \r",
+							"pm.test(\"item id verified\", function () {\r",
+							"    pm.expect(jsonData.itemId).to.eql(id);\r",
+							"});\r",
+							"\r",
+							"//verifing product id\r",
+							"pm.test(\"productId is verified\", function () {\r",
+							"  \r",
+							"  pm.expect(jsonData.productId).to.eql(pid);\r",
+							"});\r",
+							"/*\r",
+							"//verifing the quantity\r",
+							"qua=pm.environment.get(\"{{product_quantity}}\");\r",
+							"\r",
+							"pm.test(\"quantity is verified\",function(){\r",
+							"    pm.expect(jsonData.quantity).to.eql(qua);\r",
+							"});*/\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping/shoppers/{{userId}}/wishlist",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"shoppers",
+						"{{userId}}",
+						"wishlist"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add a product to the cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var ref = JSON.parse(responseBody);\r",
+							"tests[\"Successfully added to cart\"]=responseCode.code==201;\r",
+							"\r",
+							"//item and product id's from environment\r",
+							"id=pm.environment.set(\"cart-itemId\",ref.data.itemId);\r",
+							"pid=pm.environment.get(\"{{productId}}\");\r",
+							"//upadate new quantity\r",
+							"qua=pm.environment.set(\"cart_product_quantity\",ref.data.quantity);\r",
+							"\r",
+							"//item id captured and verified\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"item id verified and captured\", function () {\r",
+							"    pm.expect(jsonData.value).to.eql(id);\r",
+							"});\r",
+							"//product id capture and verified\r",
+							"pm.test(\"product id captured and verified\", function () {\r",
+							"    pm.expect(jsonData.value).to.eql(pid);\r",
+							"});\r",
+							"//verifing product quantity\r",
+							"pm.test(\"Product quantity matched\",function(){\r",
+							"    pm.expect(jsonData.value).to.eql(qua);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"productId\": {{productId}},\r\n  \"quantity\": 55\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping/shoppers/{{userId}}/carts",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"shoppers",
+						"{{userId}}",
+						"carts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all the products from the cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var ref = JSON.parse(responseBody);\r",
+							"tests[\"StatusCode is verified\"]=responseCode.code==200;\r",
+							"\r",
+							"//item and product id's and new quantity from environment\r",
+							"id=pm.environment.get(\"{{itemId}}\");\r",
+							"pid=pm.environment.get(\"{{productId}}\");\r",
+							"qua=pm.environment.get(\"{{new_product_quantity}}\");\r",
+							"\r",
+							"//item id captured and verified\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"item id verified and captured\", function () {\r",
+							"    pm.expect(jsonData.value).to.eql(id);\r",
+							"});\r",
+							"//product id capture and verified\r",
+							"pm.test(\"product id captured and verified\", function () {\r",
+							"    pm.expect(jsonData.value).to.eql(pid);\r",
+							"});\r",
+							"//verifing product quantity\r",
+							"pm.test(\"Product quantity matched\",function(){\r",
+							"    pm.expect(jsonData.value).to.eql(qua);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping/shoppers/{{userId}}/carts",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"shoppers",
+						"{{userId}}",
+						"carts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update a product in the cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var ref = JSON.parse(responseBody);\r",
+							"tests[\"Successfully updated the product in cart\"]=responseCode.code==200;\r",
+							"\r",
+							"//item and product id's from environment\r",
+							"id=pm.environment.get(\"{{cart-itemId}}\");\r",
+							"pid=pm.environment.get(\"{{productId}}\");\r",
+							"//upadate new quantity\r",
+							"qua=pm.environment.set(\"updated-cart_product_quantity\",ref.data.quantity);\r",
+							"\r",
+							"//item id captured and verified\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"item id verified and captured\", function () {\r",
+							"    pm.expect(jsonData.value).to.eql(id);\r",
+							"});\r",
+							"//product id capture and verified\r",
+							"pm.test(\"product id captured and verified\", function () {\r",
+							"    pm.expect(jsonData.value).to.eql(pid);\r",
+							"});\r",
+							"//verifing product quantity\r",
+							"pm.test(\"Product quantity matched\",function(){\r",
+							"    pm.expect(jsonData.value).to.eql(qua);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"productId\": {{productId}},\r\n  \"quantity\": 66\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping/shoppers/{{userId}}/carts/{{cart-itemId}}",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"shoppers",
+						"{{userId}}",
+						"carts",
+						"{{cart-itemId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add a new address",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var ref = JSON.parse(responseBody);\r",
+							"\r",
+							"tests[\"Successfullu Address Added\"]=responseCode.code==201;\r",
+							"\r",
+							"new_address=pm.environment.set(\"Address-id\",ref.data.addressId);\r",
+							"pm.environment.set(\"Address landmark\",ref.data.landmark);\r",
+							"\r",
+							"pm.test(\"address id created Successfully\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.value).to.eql(new_address);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"addressId\": 969,\r\n  \"buildingInfo\": \"old airport\",\r\n  \"city\": \"Banglore\",\r\n  \"country\": \"india\",\r\n  \"landmark\": \"qspiders\",\r\n  \"name\": \"faruq\",\r\n  \"phone\": \"{{phone}}\",\r\n  \"pincode\": \"560010\",\r\n  \"state\": \"Karnataka\",\r\n  \"streetInfo\": \"Murgeshpallya\",\r\n  \"type\": \"office\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping/shoppers/{{userId}}/address",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"shoppers",
+						"{{userId}}",
+						"address"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all the addresses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Verified Status\"]=responseCode.code==200;\r",
+							"\r",
+							"new_address=pm.environment.get(\"{{Address-id}}\");\r",
+							"\r",
+							"//verifing address by it's id \r",
+							"pm.test(\"address-id is added Successfully\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.value).to.eql(new_address);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping/shoppers/{{userId}}/address",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"shoppers",
+						"{{userId}}",
+						"address"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get a particular address by addressId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Verified Status \"]=responseCode.code==200;\r",
+							"new_address=pm.environment.get(\"{{Address-id}}\");\r",
+							"\r",
+							"//verifing address by it's id \r",
+							"pm.test(\"address-id is added Successfully\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.value).to.eql(new_address);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping/shoppers/{{userId}}/address/{{Address-id}}",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"shoppers",
+						"{{userId}}",
+						"address",
+						"{{Address-id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update an added address",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var ref = JSON.parse(responseBody);\r",
+							"tests[\"status matched \"]=ref.statusCode==200;\r",
+							"tests[\"type is successfully updated\"]=ref.data.type== \"Home\";\r",
+							"tests[\"landmark is successfully updated\"]=ref.data.landmark==\"red darga\";\r",
+							"tests[\"state is successfully updated\"]=ref.data.state= \"AndhraPradesh\";\r",
+							"tests[\"city is successfully updated\"]=ref.data.city==\"nellore\";\r",
+							"tests[\"streetInfo is successfully updated\"]=ref.data.streetInfo== \"Mansunnagar\";\r",
+							"tests[\"building-info is successfully updated\"]=ref.data.buildingInfo== \"foolr-1\";\r",
+							"tests[\"pincode is successfully updated\"]=ref.data.pincode== 432101;"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"addressId\": {{Address-id}},\r\n  \"buildingInfo\": \"foolr-1\",\r\n  \"city\": \"nellore\",\r\n  \"country\": \"india\",\r\n  \"landmark\": \"red darga\",\r\n  \"name\": \"faruq\",\r\n  \"phone\": \"{{phone}}\",\r\n  \"pincode\": \"432101\",\r\n  \"state\": \"AndhraPradesh\",\r\n  \"streetInfo\": \"Mansunnagar\",\r\n  \"type\": \"Home\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping/shoppers/{{userId}}/address/{{Address-id}}",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"shoppers",
+						"{{userId}}",
+						"address",
+						"{{Address-id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Place order from cart",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var ref = JSON.parse(responseBody);\r",
+							"tests[\"status matched \"]=ref.statusCode==201;\r",
+							"tests[\"order is successfully placed\"]=ref.data.orderStatus==\"PLACED\";\r",
+							"//capturing order-id\r",
+							"pm.environment.set(\"order-id\",ref.data.orderId);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"address\": {\r\n  \"addressId\": {{Address-id}},\r\n  \"buildingInfo\": \"foolr-1\",\r\n  \"city\": \"nellore\",\r\n  \"country\": \"india\",\r\n  \"landmark\": \"red darga\",\r\n  \"name\": \"faruq\",\r\n  \"phone\": \"{{phone}}\",\r\n  \"pincode\": \"432101\",\r\n  \"state\": \"AndhraPradesh\",\r\n  \"streetInfo\": \"Mansunnagar\",\r\n  \"type\": \"Home\"\r\n},\r\n  \"paymentMode\": \"COD\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping/shoppers/{{userId}}/orders",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"shoppers",
+						"{{userId}}",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Display order history",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var ref = JSON.parse(responseBody);\r",
+							"tests[\"status matched \"]=ref.statusCode==200;\r",
+							"tests[\"order is successfully placed\"]=ref.data[0].orderStatus==\"PLACED\";\r",
+							"\r",
+							"//capturing order-id from environment\r",
+							"order_id=pm.environment.get(\"{{order-id}}\");\r",
+							"\r",
+							"pm.test(\"order is verified\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.value).to.eql(order_id);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping/shoppers/{{userId}}/orders",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"shoppers",
+						"{{userId}}",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Generate Invoice copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Invoic Successfully Generated\"] = responseCode.code == 200;"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping/shoppers/{{userId}}/orders/{{order-id}}/invoice",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"shoppers",
+						"{{userId}}",
+						"orders",
+						"{{order-id}}",
+						"invoice"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "To verify the delete module--Add a product to the cart (copy)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var ref = JSON.parse(responseBody);\r",
+							"tests[\"Successfully added to cart\"]=responseCode.code==201;\r",
+							"\r",
+							"//item and product id's from environment\r",
+							"id=pm.environment.set(\"cart-itemId\",ref.data.itemId);\r",
+							"pid=pm.environment.get(\"{{productId}}\");\r",
+							"//upadate new quantity\r",
+							"qua=pm.environment.set(\"cart_product_quantity\",ref.data.quantity);\r",
+							"\r",
+							"//item id captured and verified\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"item id verified and captured\", function () {\r",
+							"    pm.expect(jsonData.value).to.eql(id);\r",
+							"});\r",
+							"//product id capture and verified\r",
+							"pm.test(\"product id captured and verified\", function () {\r",
+							"    pm.expect(jsonData.value).to.eql(pid);\r",
+							"});\r",
+							"//verifing product quantity\r",
+							"pm.test(\"Product quantity matched\",function(){\r",
+							"    pm.expect(jsonData.value).to.eql(qua);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"productId\": {{productId}},\r\n  \"quantity\": 55\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping/shoppers/{{userId}}/carts",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"shoppers",
+						"{{userId}}",
+						"carts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a product from the cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Deleted the product from cart\"]=responseCode.code==200;"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping/shoppers/{{userId}}/carts/{{productId}}",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"shoppers",
+						"{{userId}}",
+						"carts",
+						"{{productId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a product from wishlist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Product Successfully deleted\"]=responseCode.code==204;"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping/shoppers/{{userId}}/wishlist/{{productId}}",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"shoppers",
+						"{{userId}}",
+						"wishlist",
+						"{{productId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete an address",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Address Deleted successfully\"]=responseCode.code==204;"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://www.shoppersstack.com/shopping/shoppers/{{userId}}/address/{{Address-id}}",
+					"protocol": "https",
+					"host": [
+						"www",
+						"shoppersstack",
+						"com"
+					],
+					"path": [
+						"shopping",
+						"shoppers",
+						"{{userId}}",
+						"address",
+						"{{Address-id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
